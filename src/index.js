@@ -1,7 +1,7 @@
 const express = require('express');
 const connectDB = require('./config/db');
 const { default: Category } = require('./models/Category.js');
-const { default: categoryRouter } = require('../routes/categoryRouter.js');
+const { default: categoryRouter } = require('./routes/categoryRouter.js');
 require('dotenv').config();
 
 const app = express();
