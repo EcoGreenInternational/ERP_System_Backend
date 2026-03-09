@@ -1,7 +1,6 @@
 import { registerUser, loginUser, getAllUsers } from "../services/authService.js";
 import generateToken from "../util/generateToken.js";
 
-// Register a new user
 export const register = async (req, res, next) => {
   try {
     const user = await registerUser(req.body);
@@ -21,7 +20,7 @@ export const register = async (req, res, next) => {
   }
 };
 
-// Login user
+
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -44,7 +43,7 @@ export const login = async (req, res, next) => {
   }
 };
 
-// Get all users (protected route)
+
 export const getUsers = async (req, res, next) => {
   try {
     const users = await getAllUsers();
