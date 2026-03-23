@@ -1,5 +1,6 @@
 const express = require('express');
 const connectDB = require('./config/db');
+const cors = require('cors');
 const { default: Category } = require('./models/Category.js');
 const { default: categoryRouter } = require('./routes/categoryRouter.js');
 const { default: productRouter } = require('./routes/productRouter.js');
@@ -9,6 +10,7 @@ const app = express();
 connectDB();
 
 //Middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
