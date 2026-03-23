@@ -1,5 +1,5 @@
-import Product from "../models/Product.js";
-import asyncErrorHandler from "../utils/asyncErrorHandler.js";
+import Product from "../model/Product.js";
+import asyncErrorHandler from "../util/asyncErrorHandler.js";
 import {cloudinary} from "../config/cloudinary.js";
 
 //get all products

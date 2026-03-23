@@ -1,7 +1,6 @@
 const express = require('express');
 const connectDB = require('./config/db');
 const cors = require('cors');
-const { default: Category } = require('./models/Category.js');
 const { default: categoryRouter } = require('./routes/categoryRouter.js');
 const { default: productRouter } = require('./routes/productRouter.js');
 require('dotenv').config();
