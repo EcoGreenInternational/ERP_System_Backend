@@ -1,6 +1,7 @@
-const Supplier = require("../model/Supplier.js");
+import Supplier from "../model/Supplier.js";
+import { getActiveSuppliers } from "../services/supplierService.js";
 
-const createSupplier = async (req, res) => {
+export const createSupplier = async (req, res) => {
   try {
     const supplier = await Supplier.create(req.body);
 
@@ -17,7 +18,7 @@ const createSupplier = async (req, res) => {
   }
 };
 
-const editSupplier = async (req, res) => {
+export const editSupplier = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -46,9 +47,11 @@ const editSupplier = async (req, res) => {
   }
 };
 
-const getAllSuppliers = async (req, res) => {
+export const getAllSuppliers = async (req, res) => {
   try {
-    const suppliers = await Supplier.find({ isActive: true }).sort({ createdAt: -1 });
+    const suppliers = await Supplier.find({ isActive: true }).sort({
+      createdAt: -1,
+    });
 
     return res.status(200).json({
       success: true,
@@ -63,9 +66,10 @@ const getAllSuppliers = async (req, res) => {
   }
 };
 
-const getSupplierById = async (req, res) => {
+export const getSupplierById = async (req, res) => {
   try {
     const { id } = req.params;
+
     const supplier = await Supplier.findById(id);
 
     if (!supplier) {
@@ -88,7 +92,7 @@ const getSupplierById = async (req, res) => {
   }
 };
 
-const deleteSupplier = async (req, res) => {
+export const deleteSupplier = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -118,10 +122,19 @@ const deleteSupplier = async (req, res) => {
   }
 };
 
-module.exports = {
-  createSupplier,
-  editSupplier,
-  getAllSuppliers,
-  getSupplierById,
-  deleteSupplier,
+// GET suppliers for purchase order
+export const getSuppliersForPO = async (req, res) => {
+  try {
+    const suppliers = await getActiveSuppliers();
+    return res.status(200).json({
+      success: true,
+      message: "Active suppliers fetched successfully",
+      data: suppliers,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
