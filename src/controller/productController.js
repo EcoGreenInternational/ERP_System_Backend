@@ -1,88 +1,24 @@
-import Product from "../model/Product.js";
-import asyncErrorHandler from "../util/asyncErrorHandler.js";
-import {cloudinary} from "../config/cloudinary.js";
+import Product from "../model/productModel.js";
 
-export const getAllProducts = asyncErrorHandler(async (req, res, next) => {
+
+export const getAllProducts = async (req, res) => {
+  try {
     const products = await Product.find({ isActive: true })
-        .populate('categoryId', 'categoryName')
-        .sort({ createdAt: -1 });
+      .select("productName price item_count mainImage");
 
-    res.status(200).json({
-        status: 'success',
-        count: products.length,
-        data: products
-    });
-});
-export const getProductById = asyncErrorHandler(async (req, res, next) => {
-    const { id } = req.params;
-    const product = await Product.findOne({ _id: id, isActive: true })
-        .populate('categoryId');
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-    if (!product) {
-        return next(new CustomError('Product not found', 404));
-    }
 
-    res.status(200).json({
-        status: 'success',
-        data: product
-    });
-});
-export const updateProduct = asyncErrorHandler(async (req, res, next) => {
-    const { id } = req.params;
-    const existingProduct = await Product.findById(id);
-
-    if (!existingProduct || !existingProduct.isActive) {
-        return next(new CustomError('Product not found', 404));
-    }
-
-    let updateData = { ...req.body };
-
-    // Handle File Uploads 
-    if (req.files) {
-        // main img
-        if (req.files["mainImage"]) {
-            if (existingProduct.mainImage) await deleteFromCloudinary(existingProduct.mainImage);
-            updateData.mainImage = req.files["mainImage"][0].path;
-        }
-
-        // additional imgs
-        if (req.files["additionalImages"]) {
-            if (existingProduct.additionalImages?.length > 0) {
-                for (const img of existingProduct.additionalImages) {
-                    await deleteFromCloudinary(img);
-                }
-            }
-            updateData.additionalImages = req.files["additionalImages"].map(f => f.path);
-        }
-    }
-    if (typeof req.body.specifications === 'string') {
-        updateData.specifications = JSON.parse(req.body.specifications);
-    }
-
-    const updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
-        new: true,
-        runValidators: true
-    });
-
-    res.status(200).json({
-        message: 'Product updated successfully',
-        product: updatedProduct
-    });
-});
-
-export const deleteProduct = asyncErrorHandler(async (req, res, next) => {
-    const { id } = req.params;
-    const product = await Product.findById(id);
+export const getProductById = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
 
     if (!product) {
-        return next(new CustomError('Product not found', 404));
-    }
-
-    if (product.mainImage) await deleteFromCloudinary(product.mainImage);
-    if (product.additionalImages?.length > 0) {
-        for (const img of product.additionalImages) {
-            await deleteFromCloudinary(img);
-        }
+      return res.status(404).json({ message: "Product not found" });
     }
 
    
