@@ -48,8 +48,15 @@ const productSchema = new mongoose.Schema({
         required: [true, 'Main image URL is required']
     },
     additionalImages: {
-        type: [String],
-        default: []
+        type: [String], 
+        default: [],
+        validate: {
+            validator: function(arr) {
+                return arr.length <= 4;
+            },
+            message: 'Additional images should not exceed 4'
+        }
+    
     },
     sellType: {
         type: String,

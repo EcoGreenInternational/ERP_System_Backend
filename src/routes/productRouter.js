@@ -1,6 +1,6 @@
 import { upload } from "../config/cloudinary.js";
 import express from 'express';
-import { deleteProduct,getAllProducts,getProductById, updateProduct } from "../controller/productController.js";
+import { deleteProduct,getAllProducts,getProductById, increaseStock, reduceStock, updateProduct } from "../controller/productController.js";
 
 
 const productRouter = express.Router();
@@ -21,6 +21,10 @@ productRouter.put('/:id',
 );
 
 productRouter.delete('/:id', deleteProduct );
+
+productRouter.patch('/reduce-stock',reduceStock);
+
+productRouter.patch('/increase-stock',increaseStock);
 
 
 export default productRouter;

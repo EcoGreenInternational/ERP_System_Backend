@@ -93,6 +93,61 @@ export const deleteProduct = asyncErrorHandler(async (req, res, next) => {
     });
 });
 
+// Function to handle real-time stock reduction
+export const reduceStock = asyncErrorHandler(async (req, res, next) => {
+    const { productId, quantity } = req.body;
+    const soldProduct = await Product.findByIdAndUpdate(
+        productId,
+        { $inc: { item_count: -quantity } }, 
+        { 
+            new: true,
+            runValidators: true 
+        }
+    );
+
+    if (!soldProduct) {
+        return res.status(404).json({
+            status: 'fail',
+            message: 'Product not found'
+        });
+    }
+    res.status(200).json({
+        status: 'success',
+        message: 'Stock updated successfully',
+        data: {
+            productId: soldProduct._id,
+            remainingStock: soldProduct.item_count
+        }
+    });
+});
+ // Function to handle real-time stock increase 
+export const increaseStock = asyncErrorHandler(async (req, res, next) => {
+    const { productId, quantity } = req.body;
+    const restockedProduct = await Product.findByIdAndUpdate(
+        productId,
+        { $inc: { item_count: quantity } }, 
+        { 
+            new: true,
+            runValidators: true 
+        }
+    );
+    if (!restockedProduct) {
+        return res.status(404).json({
+            status: 'fail',
+            message: 'Product not found'
+        });
+    }
+    res.status(200).json({
+        status: 'success',
+        message: 'Stock updated successfully',
+        data: {
+            productId: restockedProduct._id,
+            newStock: restockedProduct.item_count
+        }
+    });
+});
+
+
 const deleteFromCloudinary = async (url) => {
     const publicId = extractPublicId(url);
     if (publicId) {
@@ -114,3 +169,4 @@ const extractPublicId = (url) => {
     const pathAfterUpload = parts.slice(startIndex).join('/');
     return pathAfterUpload.substring(0, pathAfterUpload.lastIndexOf('.'));
 };
+
